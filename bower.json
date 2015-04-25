@@ -2,7 +2,7 @@
   "name": "xp-input-state",
   "license": "BSD-3-Clause",
   "version": "0.8.0",
-  "description": "This component is used to add input capabilities on a component.",
+  "description": "This element is used to add input capabilities on a component.",
   "authors": [
     "Giuliano Rullo <g.rullo@expandjs.com>",
     "Maurizio Stefàno <m.stefano@expandjs.com>",

@@ -7,11 +7,11 @@ The complete set of contributors may be found at https://expandjs.github.io/CONT
 -->
 
 <!--
-This component is used to add input capabilities on a component.
+This element is used to add input capabilities on a custom element.
 It extends the native html `template`.
 
-@component xp-input-base
-@description This component is used to add input capabilities on a component.
+@element xp-input-base
+@description This element is used to add input capabilities on a custom element.
 @extends template
 
 @dependency polymer Polymer/polymer#^0.5
@@ -24,7 +24,7 @@ It extends the native html `template`.
 <polymer-element name="xp-input-state" extends="template" attributes="changed checked context disabled empty error form inputElement inputValue invalid invalidMessage name opCommitFrom opCommitTo opIndex opSanitize opUpdate opValidate primitive readonly required type value">
 
     <script>
-        XPComponent({
+        XPElement({
 
             /**
              * Fired when the input's value changes.
