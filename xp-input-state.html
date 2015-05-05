@@ -123,17 +123,18 @@ It extends the native html `template`.
             },
 
             /**
-             * Returns plain value representation of input's model.
+             * Returns model representation of input's plain value.
              *
-             * @method toValue
-             * @param {*} model
-             * @returns {boolean | string}
+             * @method toModel
+             * @param {*} value
+             * @returns {boolean | number | string}
              * @private
              */
-            toValue: function (model) {
-                var self = this, from = XP.isPrimitive(model) ? model : null;
-                if (self.primitive === 'boolean') { return XP.toBoolean(from, true); }
-                return XP.toString(from, true);
+            toModel: function (value) {
+                var self = this, from = XP.isPrimitive(value) ? value : null;
+                if (self.primitive === 'boolean') { return XP.toBoolean(from); }
+                if (self.primitive === 'number') { return XP.toNumber(from); }
+                return XP.toString(from);
             },
 
             /**
@@ -151,18 +152,17 @@ It extends the native html `template`.
             },
 
             /**
-             * Returns model representation of input's plain value.
+             * Returns plain value representation of input's model.
              *
-             * @method toModel
-             * @param {*} value
-             * @returns {boolean | number | string}
+             * @method toValue
+             * @param {*} model
+             * @returns {boolean | string}
              * @private
              */
-            toModel: function (value) {
-                var self = this, from = XP.isPrimitive(value) ? value : null;
-                if (self.primitive === 'boolean') { return XP.toBoolean(from); }
-                if (self.primitive === 'number') { return XP.toNumber(from); }
-                return XP.toString(from);
+            toValue: function (model) {
+                var self = this, from = XP.isPrimitive(model) ? model : null;
+                if (self.primitive === 'boolean') { return XP.toBoolean(from, true); }
+                return XP.toString(from, true);
             },
 
             /*********************************************************************/
