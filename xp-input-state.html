@@ -23,18 +23,18 @@ It extends the native html `template`.
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../expandjs/expandjs.html">
 
-<polymer-element name="xp-input-state" extends="template" attributes="changed checked context disabled empty error form inputElement inputValue invalid invalidMessage name opCommitFrom opCommitTo opIndex opSanitize opUpdate opValidate primitive readonly required type value">
+<polymer-element name="xp-input-state" extends="template" attributes="changed checked context disabled empty error form injected invalid invalidMessage model name opCommitFrom opCommitTo opIndex opSanitize opUpdate opValidate primitive readonly required type value">
 
     <script>
         XPElement({
 
             /**
-             * Fired when the input's value changes.
+             * Fired when the input's model changes.
              *
              * @event xp-input-change
              * @param {Element} firer
              * @param {boolean} isChanged
-             * @param {*} value
+             * @param {*} model
              * @bubbles
              */
 
@@ -118,20 +118,20 @@ It extends the native html `template`.
                 var self = this;
                 self.execute('update');
                 self.execute('sanitize');
-                if (self.inputValue || !self.required) { self.execute('validate'); }
+                if (self.value || !self.required) { self.execute('validate'); }
                 return self;
             },
 
             /**
-             * Returns plain value representation of input's value.
+             * Returns plain value representation of input's model.
              *
-             * @method toInputValue
-             * @param {*} value
+             * @method toValue
+             * @param {*} model
              * @returns {boolean | string}
              * @private
              */
-            toInputValue: function (value) {
-                var self = this, from = XP.isPrimitive(value) ? value : null;
+            toValue: function (model) {
+                var self = this, from = XP.isPrimitive(model) ? model : null;
                 if (self.primitive === 'boolean') { return XP.toBoolean(from, true); }
                 return XP.toString(from, true);
             },
@@ -151,15 +151,15 @@ It extends the native html `template`.
             },
 
             /**
-             * Returns value representation of input's plain value.
+             * Returns model representation of input's plain value.
              *
-             * @method toValue
-             * @param {*} inputValue
+             * @method toModel
+             * @param {*} value
              * @returns {boolean | number | string}
              * @private
              */
-            toValue: function (inputValue) {
-                var self = this, from = XP.isPrimitive(inputValue) ? inputValue : null;
+            toModel: function (value) {
+                var self = this, from = XP.isPrimitive(value) ? value : null;
                 if (self.primitive === 'boolean') { return XP.toBoolean(from); }
                 if (self.primitive === 'number') { return XP.toNumber(from); }
                 return XP.toString(from);
@@ -176,7 +176,7 @@ It extends the native html `template`.
             publish: {
 
                 /**
-                 * If set to true, the input's value is changed.
+                 * If set to true, the input's model is changed.
                  *
                  * @attribute changed
                  * @type boolean
@@ -250,19 +250,10 @@ It extends the native html `template`.
                 /**
                  * The appended input's element.
                  *
-                 * @attribute inputElement
+                 * @attribute injected
                  * @type Element
                  */
-                inputElement: {reflect: false, value: null},
-
-                /**
-                 * The input's plain value.
-                 *
-                 * @attribute inputValue
-                 * @type string
-                 * @default ""
-                 */
-                inputValue: {reflect: false, value: ''},
+                injected: {reflect: false, value: null},
 
                 /**
                  * If set to true, the input's value is not valid.
@@ -281,6 +272,14 @@ It extends the native html `template`.
                  * @default ""
                  */
                 invalidMessage: {reflect: true, value: ''},
+
+                /**
+                 * The input's model.
+                 *
+                 * @attribute model
+                 * @type *
+                 */
+                model: {reflect: false, value: null},
 
                 /**
                  * The input's name.
@@ -367,12 +366,13 @@ It extends the native html `template`.
                 type: {reflect: true, value: 'text'},
 
                 /**
-                 * The input's value.
+                 * The input's plain value.
                  *
                  * @attribute value
-                 * @type *
+                 * @type string
+                 * @default ""
                  */
-                value: {reflect: false, value: null}
+                value: {reflect: false, value: ''}
             },
 
             /**
@@ -423,17 +423,17 @@ It extends the native html `template`.
                 var self = this;
 
                 // Checking
-                if (!self.inputElement) { return; }
+                if (!self.injected) { return; }
 
                 // Setting
                 self.changed = self.initial.checked !== post;
-                self.value   = self.changed ? self.toValue(post) : self.initial.value;
+                self.model   = self.changed ? self.toModel(post) : self.initial.model;
 
                 // Committing
                 self.execute('commitTo');
 
                 // Firing
-                self.context.fire('xp-input-change', {firer: self.context, isChanged: self.changed, value: self.value});
+                self.context.fire('xp-input-change', {firer: self.context, isChanged: self.changed, model: self.model});
             },
 
             // OBSERVER
@@ -461,7 +461,7 @@ It extends the native html `template`.
             },
 
             // OBSERVER
-            inputElementChanged: function (pre, post) {
+            injectedChanged: function (pre, post) {
                 var self = this;
                 if (arguments.length < 2) { return; }
                 if (self.contextObserver) { self.contextObserver.disconnect(); }
@@ -472,30 +472,8 @@ It extends the native html `template`.
             },
 
             // OBSERVER
-            inputValueChanged: function (pre, post) {
-
-                // Vars
-                var self = this;
-
-                // Sanitizing
-                self.execute('sanitize');
-
-                // Checking
-                if (!self.inputElement || self.inputValue !== post) { return; }
-
-                // Setting
-                self.changed = self.initial.inputValue !== post;
-                self.empty   = self.inputValue.length === 0;
-                self.value   = self.changed ? self.toValue(post) : self.initial.value;
-
-                // Committing
-                self.execute('commitTo');
-
-                // Validating
-                self.execute('validate');
-
-                // Firing
-                self.context.fire('xp-input-change', {firer: self.context, isChanged: self.changed, value: self.value});
+            modelChanged: function () {
+                this[this.primitive === 'boolean' ? 'checked' : 'value'] = this.toValue(this.model);
             },
 
             // OBSERVER
@@ -506,8 +484,30 @@ It extends the native html `template`.
             },
 
             // OBSERVER
-            valueChanged: function () {
-                this[this.primitive === 'boolean' ? 'checked' : 'inputValue'] = this.toInputValue(this.value);
+            valueChanged: function (pre, post) {
+
+                // Vars
+                var self = this;
+
+                // Sanitizing
+                self.execute('sanitize');
+
+                // Checking
+                if (!self.injected || self.value !== post) { return; }
+
+                // Setting
+                self.changed = self.initial.value !== post;
+                self.empty   = self.value.length === 0;
+                self.model   = self.changed ? self.toModel(post) : self.initial.model;
+
+                // Committing
+                self.execute('commitTo');
+
+                // Validating
+                self.execute('validate');
+
+                // Firing
+                self.context.fire('xp-input-change', {firer: self.context, isChanged: self.changed, model: self.model});
             },
 
             /*********************************************************************/
@@ -522,7 +522,7 @@ It extends the native html `template`.
                 var self = this;
                 if (!self.context) { return; }
                 self.asyncExecute('index', [Math.max(self.context.tabIndex, 0)]);
-                self.context.removeAttribute(self.inputElement ? 'tabindex' : '');
+                self.context.removeAttribute(self.injected ? 'tabindex' : '');
                 self.contextObserver = XP.onMutation(self.context, self.mutated.bind(self), {attributes: true, attributeFilter: ['tabindex']});
             },
 
@@ -533,10 +533,10 @@ It extends the native html `template`.
                 self.handleChangeBinded = self.handleChange.bind(self);
                 self.handleClickBinded  = self.handleClick.bind(self);
                 self.handleFocusBinded  = self.handleFocus.bind(self);
-                self.initial.checked    = self.checked    = self.value && self.primitive === 'boolean' ? true : self.checked;
-                self.initial.inputValue = self.inputValue = self.value && self.primitive !== 'boolean' ? self.toInputValue(self.value) : self.inputValue;
-                self.initial.value      = self.value      = self.checked || (self.inputValue ? self.toValue(self.inputValue) : self.value);
-                self.empty              = self.primitive !== 'boolean' && !self.inputValue;
+                self.initial.checked    = self.checked = self.model && self.primitive === 'boolean' ? true : self.checked;
+                self.initial.value      = self.value   = self.model && self.primitive !== 'boolean' ? self.toValue(self.model) : self.value;
+                self.initial.model      = self.model   = self.checked || (self.value ? self.toModel(self.value) : self.model);
+                self.empty              = self.primitive !== 'boolean' && !self.value;
             },
 
             /*********************************************************************/
