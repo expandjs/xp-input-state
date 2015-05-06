@@ -440,8 +440,8 @@ It extends the native html `template`.
             contextChanged: function (pre, post) {
                 var self = this;
                 if (arguments.length < 2) { return; }
-                if (pre) { XP.unlisten(pre, {click: self.handleClickBinded}); }
-                if (post) { XP.listen(post, {click: self.handleClickBinded}); }
+                if (pre) { XP.unlisten(pre, {click: self.handleClickBound}); }
+                if (post) { XP.listen(post, {click: self.handleClickBound}); }
             },
 
             // OBSERVER
@@ -455,8 +455,8 @@ It extends the native html `template`.
             formChanged: function (pre, post) {
                 var self = this;
                 if (arguments.length < 2) { return; }
-                XP.unlisten(pre, {reset: self.handleChangeBinded});
-                XP.listen(post, {reset: self.handleChangeBinded});
+                XP.unlisten(pre, {reset: self.handleChangeBound});
+                XP.listen(post, {reset: self.handleChangeBound});
                 self.refresh();
             },
 
@@ -465,8 +465,8 @@ It extends the native html `template`.
                 var self = this;
                 if (arguments.length < 2) { return; }
                 if (self.contextObserver) { self.contextObserver.disconnect(); }
-                if (XP.isElement(pre)) { XP.unlisten(pre, {blur: self.handleBlurBinded, change: self.handleChangeBinded, focus: self.handleFocusBinded}); }
-                if (XP.isElement(post)) { XP.listen(post, {blur: self.handleBlurBinded, change: self.handleChangeBinded, focus: self.handleFocusBinded}); }
+                if (XP.isElement(pre)) { XP.unlisten(pre, {blur: self.handleBlurBound, change: self.handleChangeBound, focus: self.handleFocusBound}); }
+                if (XP.isElement(post)) { XP.listen(post, {blur: self.handleBlurBound, change: self.handleChangeBound, focus: self.handleFocusBound}); }
                 self.mutated();
                 self.refresh();
             },
@@ -529,10 +529,10 @@ It extends the native html `template`.
             // LISTENER
             ready: function () {
                 var self = this;
-                self.handleBlurBinded   = self.handleBlur.bind(self);
-                self.handleChangeBinded = self.handleChange.bind(self);
-                self.handleClickBinded  = self.handleClick.bind(self);
-                self.handleFocusBinded  = self.handleFocus.bind(self);
+                self.handleBlurBound   = self.handleBlur.bind(self);
+                self.handleChangeBound = self.handleChange.bind(self);
+                self.handleClickBound  = self.handleClick.bind(self);
+                self.handleFocusBound  = self.handleFocus.bind(self);
                 self.initial.checked    = self.checked = self.model && self.primitive === 'boolean' ? true : self.checked;
                 self.initial.value      = self.value   = self.model && self.primitive !== 'boolean' ? self.toValue(self.model) : self.value;
                 self.initial.model      = self.model   = self.checked || (self.value ? self.toModel(self.value) : self.model);
