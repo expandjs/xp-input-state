@@ -86,7 +86,7 @@ It extends the native html `template`.
              */
             asyncExecute: function (name, args) {
                 var self = this;
-                XP.requestAnimationFrame(function () { self.execute(name, args); });
+                XP.delay(function () { self.execute(name, args); });
                 return self;
             },
 
