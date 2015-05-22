@@ -1,7 +1,7 @@
 {
   "name": "xp-input-state",
   "license": "BSD-3-Clause",
-  "version": "0.8.9",
+  "version": "0.8.10",
   "description": "A custom element used to add input capabilities to a context element",
   "homepage": "http://expandjs.com/elements/xp-input-state",
   "authors": [
