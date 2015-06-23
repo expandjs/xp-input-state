@@ -1,3 +1,3 @@
 # xp-input-state
 
-See the [`documentation page`](http://expandjs.com/elements/xp-input-state) for more information.
+This repository **is deprecated**. Use [`xp-input-behavior`](https://github.com/expandjs/xp-input-behavior) instead.
